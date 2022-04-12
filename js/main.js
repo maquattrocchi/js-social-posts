@@ -55,7 +55,6 @@ const posts = [
         "created": "2021-03-05"
     }
 ];
-
 //funzione per creare il post
 function stampaPost(){
     const container = document.getElementById('container');
@@ -120,7 +119,6 @@ function miPiace(event){
     counter.forEach((element)=>{
         //prendo il valore finale dell'id di ogni elemento
         const elementId = element.id.charAt(element.id.length-1);
-        console.log(elementId)
         // verifico se corrispondono
         if(data === elementId){
             console.log(elementId)
@@ -130,4 +128,34 @@ function miPiace(event){
     postId.push(data)
     console.log(postId)
     this.removeEventListener('click', miPiace)
+    this.addEventListener('click', nonMiPiace)
 };
+
+function nonMiPiace(event){
+    event.preventDefault()
+    //rimozione classe
+    this.classList.remove('like-button--liked');
+    //variabile per data-postid
+    const data = this.dataset.postid;
+    console.log(data);
+    //variabile aray counter
+    const counter = Array.from(document.getElementsByClassName('js-likes-counter'))
+    counter.forEach((element)=>{
+        //prendo il valore finale dell'id di ogni elemento
+        const elementId = element.id.charAt(element.id.length-1);
+        // verifico se corrispondono
+        if(data === elementId){
+            console.log(elementId)
+            element.innerHTML--
+        };
+    });
+    //rimozione id dall'array
+    for(let i = 0; i < postId.length; i++){ 
+        if(postId[i] === data) { 
+            postId.splice(i, 1); 
+        }
+    }
+    console.log(postId)
+    this.removeEventListener('click', nonMiPiace);
+    this.addEventListener('click', miPiace)
+}
