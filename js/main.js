@@ -98,3 +98,36 @@ function stampaPost(){
     })
 };
 stampaPost();
+//variabile array di bottoni dei likes
+const likes = Array.from(document.getElementsByClassName('like-button')) 
+console.log(likes)
+
+likes.forEach((like)=>{
+    like.addEventListener('click', miPiace);
+});
+//creo un array per gli id
+const postId = []
+//funzione like
+function miPiace(event){
+    event.preventDefault()
+    //aggiunta classe
+    this.classList.add('like-button--liked');
+    //variabile per data-postid
+    const data = this.dataset.postid;
+    console.log(data);
+    //variabile aray counter
+    const counter = Array.from(document.getElementsByClassName('js-likes-counter'))
+    counter.forEach((element)=>{
+        //prendo il valore finale dell'id di ogni elemento
+        const elementId = element.id.charAt(element.id.length-1);
+        console.log(elementId)
+        // verifico se corrispondono
+        if(data === elementId){
+            console.log(elementId)
+            element.innerHTML++
+        };
+    });
+    postId.push(data)
+    console.log(postId)
+    this.removeEventListener('click', miPiace)
+};
