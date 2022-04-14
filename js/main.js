@@ -1,3 +1,4 @@
+//array post
 const posts = [
     {
         "id": 1,
@@ -55,10 +56,31 @@ const posts = [
         "created": "2021-03-05"
     }
 ];
+//funzione data
+function changeDate(element){
+    let data = new Date(element.created).toLocaleDateString();
+    console.log(data);
+    element.created = data;
+};
+//funzione iniziali
+function getInitials(element){
+    if(element.author.image === null){
+        let iniziali = element.author.name.split(' ');
+        iniziali = iniziali[0].charAt(0) + iniziali[1].charAt(0);
+        element.author.image = iniziali;
+        console.log(iniziali);
+    };
+};
+//cambio data e iniziali dove necessario
+posts.forEach((element)=>{
+    changeDate(element);
+    getInitials(element);
+});
 //funzione per creare il post
 function stampaPost(){
     const container = document.getElementById('container');
     console.log(container);
+    //creazione post
     posts.forEach((element)=>{
         const post = document.createElement('div');
         post.setAttribute('class', 'post');
@@ -66,7 +88,10 @@ function stampaPost(){
         <div class="post__header">
             <div class="post-meta">
                 <div class="post-meta__icon">
-                    <img class="profile-pic" src="${element.author.image}" alt="${element.author.name}">
+                    <img class="profile-pic" src="${element.author.image}" alt="${element.author.image}">
+                    <div style="display:none" class="profile-pic-default">
+                        <span>${element.author.image}</span>
+                    </div>
                 </div>
                 <div class="post-meta__data">
                     <div class="post-meta__author">${element.author.name}</div>
@@ -92,15 +117,29 @@ function stampaPost(){
             </div> 
         </div>
         `
-        container.append(post)
+        container.append(post);
         console.log(post)
-    })
+    });
 };
+//stampo i post
 stampaPost();
+//array di profile-pic
+const images = Array.from(document.getElementsByClassName('profile-pic'));
+console.log(images);
+//aggiungo l'evento
+images.forEach((img) =>{
+    img.addEventListener('error', imageNotFound);
+});
+//funzione quando l'img non viene trovata
+function imageNotFound (){
+        const span = this.nextElementSibling;
+        span.style.display = "flex";
+        this.remove();
+};
 //variabile array di bottoni dei likes
-const likes = Array.from(document.getElementsByClassName('like-button')) 
-console.log(likes)
-
+const likes = Array.from(document.getElementsByClassName('like-button')) ;
+console.log(likes);
+//aggiungo la funzione al click
 likes.forEach((like)=>{
     like.addEventListener('click', miPiace);
 });
@@ -108,54 +147,27 @@ likes.forEach((like)=>{
 const postId = []
 //funzione like
 function miPiace(event){
-    event.preventDefault()
-    //aggiunta classe
-    this.classList.add('like-button--liked');
+    event.preventDefault();
     //variabile per data-postid
     const data = this.dataset.postid;
     console.log(data);
-    //variabile aray counter
-    const counter = Array.from(document.getElementsByClassName('js-likes-counter'))
-    counter.forEach((element)=>{
-        //prendo il valore finale dell'id di ogni elemento
-        const elementId = element.id.charAt(element.id.length-1);
-        // verifico se corrispondono
-        if(data === elementId){
-            console.log(elementId)
-            element.innerHTML++
+    //variabile counter per numero di mi piace
+    const counter = document.getElementById(`like-counter-${data}`);
+    console.log(counter);
+    //aggiungo o tolgo il mi piace
+    if(!this.classList.contains('like-button--liked')){
+        counter.innerHTML++;
+        this.classList.add('like-button--liked');
+        postId.push(data);
+        console.log(postId);
+    } else {
+        counter.innerHTML--;
+        this.classList.remove('like-button--liked');
+        for(let i = 0; i < postId.length; i++){ 
+            if(postId[i] === data) { 
+                postId.splice(i, 1); 
+                console.log(postId);
+            };
         };
-    });
-    postId.push(data)
-    console.log(postId)
-    this.removeEventListener('click', miPiace)
-    this.addEventListener('click', nonMiPiace)
+    };
 };
-
-function nonMiPiace(event){
-    event.preventDefault()
-    //rimozione classe
-    this.classList.remove('like-button--liked');
-    //variabile per data-postid
-    const data = this.dataset.postid;
-    console.log(data);
-    //variabile aray counter
-    const counter = Array.from(document.getElementsByClassName('js-likes-counter'))
-    counter.forEach((element)=>{
-        //prendo il valore finale dell'id di ogni elemento
-        const elementId = element.id.charAt(element.id.length-1);
-        // verifico se corrispondono
-        if(data === elementId){
-            console.log(elementId)
-            element.innerHTML--
-        };
-    });
-    //rimozione id dall'array
-    for(let i = 0; i < postId.length; i++){ 
-        if(postId[i] === data) { 
-            postId.splice(i, 1); 
-        }
-    }
-    console.log(postId)
-    this.removeEventListener('click', nonMiPiace);
-    this.addEventListener('click', miPiace)
-}
